@@ -315,7 +315,7 @@ def time_series(df):
     chat_started_datetime = "Chat started on - {} {}".format(
         ini_time, df["AmPm"].iat[0]
     )
-    last_chat_datetime = "Last chat on - {} {}".format(ini_time, df["AmPm"].iat[-1])
+    last_chat_datetime = "Last chat on - {} {}".format(fin_time, df["AmPm"].iat[-1])
     sttoend = "Out of {} days {} days members pinged.".format(
         tot_time.days, df["Date"].nunique()
     )
