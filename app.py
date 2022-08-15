@@ -22,21 +22,21 @@ with col1:
     )
 
 with col2:
-    st.header("Step 2")
+    st.header("Step 1")
     st.caption("Click on More")
     st.image(
         "https://raw.githubusercontent.com/iamlekh/whatsapp-chat-analyser/main/app/static/img/step2.png"
     )
 
 with col3:
-    st.header("Step 3")
+    st.header("Step 1")
     st.caption("Click on Export Chat")
     st.image(
         "https://raw.githubusercontent.com/iamlekh/whatsapp-chat-analyser/main/app/static/img/step3.png"
     )
 
 with col4:
-    st.header("Step 4")
+    st.header("Step 1")
     st.caption("Click on Without Media")
     st.image(
         "https://raw.githubusercontent.com/iamlekh/whatsapp-chat-analyser/main/app/static/img/step4.png"
@@ -74,55 +74,16 @@ if uploaded_file is not None:
         iterator_marks = iter(sender_msg_count(df1)[0].index)
         l = len(sender_msg_count(df1)[0].index)
         for _ in range(l):
-
-            if (l % 2) == 0:
-                try:
-                    col1, col2 = st.columns(2)
-                    a = next(iterator_marks)
-                    b = next(iterator_marks)
-                    col1.metric(
-                        a,
-                        sender_msg_count(df1)[0]["message counts"][a],
-                        sender_msg_count(df1)[0]["message counts"][a]
-                        - sender_msg_count(df1)[1],
-                    )
-                    col2.metric(
-                        b,
-                        sender_msg_count(df1)[0]["message counts"][b],
-                        sender_msg_count(df1)[0]["message counts"][b]
-                        - sender_msg_count(df1)[1],
-                    )
-                except StopIteration:
-                    break
-            else:
-                try:
-                    col1, col2 = st.columns(2)
-                    a, b = next(iterator_marks), next(iterator_marks)
-                    col1.metric(
-                        a,
-                        sender_msg_count(df1)[0]["message counts"][a],
-                        sender_msg_count(df1)[0]["message counts"][a]
-                        - sender_msg_count(df1)[1],
-                    )
-                    col2.metric(
-                        b,
-                        sender_msg_count(df1)[0]["message counts"][b],
-                        sender_msg_count(df1)[0]["message counts"][b]
-                        - sender_msg_count(df1)[1],
-                    )
-                except StopIteration:
-                    break
-                else:
-                    try:
-                        c = next(iterator_marks)
-                        st.metric(
-                            c,
-                            sender_msg_count(df1)[0]["message counts"][c],
-                            sender_msg_count(df1)[0]["message counts"][c]
-                            - sender_msg_count(df1)[1],
-                        )
-                    except StopIteration:
-                        break
+            try:
+                c = next(iterator_marks)
+                st.metric(
+                    c,
+                    sender_msg_count(df1)[0]["message counts"][c],
+                    sender_msg_count(df1)[0]["message counts"][c]
+                    - sender_msg_count(df1)[1],
+                )
+            except StopIteration:
+                break
         st.subheader("user vs message")
 
         st.bar_chart(sender_msg)
@@ -169,6 +130,5 @@ if uploaded_file is not None:
             st.markdown("Page viewed = {} times.".format(len(pageviews)))
         except ValueError:
             st.markdown("Page viewed = {} times.".format(1))
-        # todo
     except Exception as e:
         st.subheader("please upload the doc in proper format")
