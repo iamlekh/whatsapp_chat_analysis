@@ -22,21 +22,21 @@ with col1:
     )
 
 with col2:
-    st.header("Step 1")
+    st.header("Step 2")
     st.caption("Click on More")
     st.image(
         "https://raw.githubusercontent.com/iamlekh/whatsapp-chat-analyser/main/app/static/img/step2.png"
     )
 
 with col3:
-    st.header("Step 1")
+    st.header("Step 3")
     st.caption("Click on Export Chat")
     st.image(
         "https://raw.githubusercontent.com/iamlekh/whatsapp-chat-analyser/main/app/static/img/step3.png"
     )
 
 with col4:
-    st.header("Step 1")
+    st.header("Step 4")
     st.caption("Click on Without Media")
     st.image(
         "https://raw.githubusercontent.com/iamlekh/whatsapp-chat-analyser/main/app/static/img/step4.png"
@@ -130,5 +130,6 @@ if uploaded_file is not None:
             st.markdown("Page viewed = {} times.".format(len(pageviews)))
         except ValueError:
             st.markdown("Page viewed = {} times.".format(1))
+
     except Exception as e:
         st.subheader("please upload the doc in proper format")

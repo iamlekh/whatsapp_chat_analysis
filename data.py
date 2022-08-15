@@ -6,6 +6,8 @@ from matplotlib.gridspec import GridSpec
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 from collections import Counter
 import demoji
+from datetime import datetime
+
 
 colorlist = [
     "#D8DDEC",
@@ -49,11 +51,20 @@ colorlist = [
 
 def clean_data(df):
     def getdate(x):
-        res = re.search("\d\d/\d\d/\d\d", x)
-        if res != None:
-            return res.group()
+        # global YY
+        if re.search("\d\d/\d\d/\d\d\d\d", x):
+            res = re.search("\d\d/\d\d/\d\d\d\d", x)
+            if res != None:
+                return res.group()[:-4] + res.group()[-2:]
+            else:
+                return ""
         else:
-            return ""
+            # YY = "A"
+            res = re.search("\d\d/\d\d/\d\d", x)
+            if res != None:
+                return res.group()
+            else:
+                return ""
 
     df["Date"] = list(map(lambda x: getdate(x), df.iloc[:, 0]))
 
@@ -75,12 +86,33 @@ def clean_data(df):
     ## Remove rows where date is empty
     df.drop(np.where(df.iloc[:, 1] == "")[0], inplace=True)
 
+    def getatime(x):
+        a = x.split(", ")[1].split(" -")[0]
+        h = int(a.split(":")[0])
+        m = int(a.split(":")[1])
+        postfix = "am"
+        if h > 12:
+            postfix = "pm"
+            h -= 12
+
+        return "{}:{:02d} {}".format(h or 12, m, postfix)
+
     def gettime(x):
-        res = re.search(".\d:\d\d\s[a|p]m", x)
-        if res != None:
-            return res.group()
+        if re.search(".\d:\d\d\s[a|p]m", x):
+            res = re.search(".\d:\d\d\s[a|p]m", x)
+            if res != None:
+
+                return res.group()
+            else:
+                return ""
         else:
-            return ""
+            s = getatime(x)
+            if s != None:
+                return s
+            else:
+                return ""
+
+        # datetime.datetime(2015, 8, 15, 20, 40)
 
     df["time"] = df[0].apply(gettime)
     df["Hour"] = df["time"].apply(lambda x: x.split(":")[0])
@@ -90,7 +122,7 @@ def clean_data(df):
     ## Extract Day Month and Year from Date
     df["Day"] = list(map(lambda d: d.split("/")[0], df.Date))
     df["Months"] = list(map(lambda d: d.split("/")[1], df.Date))
-    df["Year"] = list(map(lambda d: d.split("/")[2], df.Date))
+    df["Year"] = list(map(lambda d: d.split("/")[2][-2:], df.Date))
 
     ##Remove date from original text data using substitute function of regular expression
     df.iloc[:, 0] = list(map(lambda x: re.sub("../../..", "", x)[2:], df.iloc[:, 0]))
@@ -100,11 +132,19 @@ def clean_data(df):
     )
 
     def getsender(x):
-        res = re.search(re.compile(".*?: "), x)
-        if res != None:
-            return res.group()[1:-2]
+
+        if re.search(re.compile("-.*?: "), x):
+            res = re.search(re.compile("-.*?: "), x)
+            if res != None:
+                return res.group()[1:-2]
+            else:
+                return ""
         else:
-            return ""
+            res = re.search(re.compile(".*?: "), x)
+            if res != None:
+                return res.group()[1:-2]
+            else:
+                return ""
 
     df["sender"] = list(map(getsender, df.iloc[:, 0]))
     df = df[df["sender"].notna()]
@@ -299,8 +339,13 @@ def word_letter_counter(df):
 
 
 def time_series(df):
-    format = "%d/%m/%y %H:%M %p"
-    df["Datetime"] = pd.to_datetime(df["Date"] + " " + df["time"], format=format)
+    format1 = "%d/%m/%y %H:%M %p"
+    format2 = "%d/%m/%Y %H:%M %p"
+    # if YY == "A":
+    #     df["Datetime"] = pd.to_datetime(df["Date"] + " " + df["time"], format=format2)
+    # else:
+    df["Datetime"] = pd.to_datetime(df["Date"] + " " + df["time"], format=format1)
+
     df_date = df.set_index(pd.DatetimeIndex(df["Datetime"]))
     df_o = df_date.groupby("Date").count()["Day"]
     fig1 = plt.figure(figsize=[15, 7])
